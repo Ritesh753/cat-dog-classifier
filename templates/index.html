@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cat vs Dog Classifier</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #f0f2f5;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
+
+    .card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        padding: 30px;
+        text-align: center;
+        width: 350px;
+    }
+
+    h1 {
+        font-size: 22px;
+        margin-bottom: 20px;
+    }
+
+    #preview {
+        max-width: 100%;
+        max-height: 250px;
+        border-radius: 10px;
+        margin-bottom: 15px;
+        display: none;
+    }
+
+    input[type="file"] {
+        margin-bottom: 15px;
+    }
+
+    button {
+        background: #4CAF50;
+        color: white;
+        border: none;
+        padding: 10px 25px;
+        border-radius: 8px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background: #43a047;
+    }
+
+    button:disabled {
+        background: #a5d6a7;
+        cursor: not-allowed;
+    }
+
+    #result {
+        margin-top: 20px;
+        font-size: 20px;
+        font-weight: bold;
+        background: #eee;
+        padding: 10px;
+        border-radius: 8px;
+        min-height: 25px;
+    }
+
+    .error {
+        color: #d32f2f;
+        background: #fdecea !important;
+    }
+</style>
+</head>
+<body>
+
+<div class="card">
+    <h1>🐱 Cat vs Dog Classifier 🐶</h1>
+
+    <input type="file" id="imageInput" accept="image/*"><br>
+    <img id="preview" src="" alt="Preview">
+    <br>
+    <button id="predictBtn">Predict</button>
+
+    <div id="result"></div>
+</div>
+
+<script>
+    const imageInput = document.getElementById('imageInput');
+    const preview = document.getElementById('preview');
+    const predictBtn = document.getElementById('predictBtn');
+    const resultDiv = document.getElementById('result');
+
+    // Show a preview when the user picks an image
+    imageInput.addEventListener('change', () => {
+        const file = imageInput.files[0];
+        resultDiv.innerText = '';
+        resultDiv.classList.remove('error');
+
+        if (file) {
+            preview.src = URL.createObjectURL(file);
+            preview.style.display = 'block';
+        } else {
+            preview.style.display = 'none';
+        }
+    });
+
+    // Send the image to the backend and show the result
+    predictBtn.addEventListener('click', async () => {
+        const file = imageInput.files[0];
+
+        if (!file) {
+            resultDiv.innerText = 'Please select an image first!';
+            resultDiv.classList.add('error');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('image', file);
+
+        predictBtn.disabled = true;
+        resultDiv.classList.remove('error');
+        resultDiv.innerText = 'Predicting...';
+
+        try {
+            const response = await fetch('/predict', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                resultDiv.innerText = data.error || 'Something went wrong.';
+                resultDiv.classList.add('error');
+            } else {
+                // Backend sends confidence as a fraction (0 to 1), so multiply by 100 here
+                const confidencePercent = (data.confidence * 100).toFixed(2);
+                resultDiv.innerText = `${data.result} (${confidencePercent}% confidence)`;
+            }
+        } catch (err) {
+            resultDiv.innerText = 'Error connecting to server.';
+            resultDiv.classList.add('error');
+        } finally {
+            predictBtn.disabled = false;
+        }
+    });
+</script>
+
+</body>
+</html>
