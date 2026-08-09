@@ -1,6 +1,7 @@
-flask
+﻿flask
 tensorflow
 opencv-python
 numpy
-huggingface_hubgunicorn
+requests
+huggingface_hub
 gunicorn
