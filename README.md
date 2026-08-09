@@ -12,12 +12,12 @@ Behind the scenes, I trained a CNN (a type of neural network good at recognizing
 
 ## 🛠️ Tools I Used
 
-|       What         |Tool                  |
-|---                 |---                   |
-| Training the model | TensorFlow / Keras   |
-| Website backend    | Flask (Python)       |
-| Website frontend   | HTML, CSS, JavaScript|
-| Dataset            | Kaggle - Dogs vs Cats|
+| What | Tool |
+|---|---|
+| Training the model | TensorFlow / Keras |
+| Website backend | Flask (Python) |
+| Website frontend | HTML, CSS, JavaScript |
+| Dataset | Kaggle - Dogs vs Cats |
 
 ## 🏗️ How It Works (Step by Step)
 
